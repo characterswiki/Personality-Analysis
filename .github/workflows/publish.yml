@@ -1,4 +1,4 @@
-lname: Publish Hashnode Posts
+name: Publish Hashnode Posts
 
 on:
   push:
@@ -13,19 +13,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    # -------------------------
+    # 1️⃣ Checkout repo
+    # -------------------------
+    - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        persist-credentials: true  # Needed for committing back
 
+    # -------------------------
+    # 2️⃣ Set up Python
+    # -------------------------
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
+    # -------------------------
+    # 3️⃣ Install dependencies
+    # -------------------------
     - name: Install dependencies
       run: pip install requests
 
-    - name: Publish to Hashnode
+    # -------------------------
+    # 4️⃣ Run publish script
+    # -------------------------
+    - name: Generate & Publish Posts
       env:
         HASHNODE_TOKEN: ${{ secrets.HASHNODE_TOKEN }}
         PUBLICATION_ID: ${{ secrets.PUBLICATION_ID }}
       run: python scripts/publish_to_hashnode.py
+
+    # -------------------------
+    # 5️⃣ Commit generated Markdown files back to repo
+    # -------------------------
+    - name: Commit posts
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add posts/*.md
+        git commit -m "Add generated posts [ci skip]" || echo "No changes to commit"
+        git push origin main
