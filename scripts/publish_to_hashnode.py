@@ -28,7 +28,7 @@ if len(names) != len(personalities):
     raise Exception("names.txt and personality.txt must have the same number of lines")
 
 # -------------------------
-# 4️⃣ GraphQL mutation
+# 4️⃣ GraphQL mutation to create post
 # -------------------------
 mutation = """
 mutation CreatePost($input: CreatePostInput!) {
@@ -44,7 +44,7 @@ mutation CreatePost($input: CreatePostInput!) {
 headers = {"Authorization": TOKEN}
 
 # -------------------------
-# 5️⃣ Loop and publish
+# 5️⃣ Loop and publish posts
 # -------------------------
 for i, (name, trait) in enumerate(zip(names, personalities), start=1):
     title = f"{name} Personality Analysis"
@@ -61,9 +61,11 @@ for i, (name, trait) in enumerate(zip(names, personalities), start=1):
 ## Analysis
 This post discusses {name}'s personality based on their actions and character in the anime/manga world.
 """
+
     variables = {"input": {"publicationId": PUBLICATION_ID, "title": title, "contentMarkdown": content}}
 
     response = requests.post(API_URL, json={"query": mutation, "variables": variables}, headers=headers)
+
     try:
         post_url = response.json()["data"]["createPost"]["post"]["url"]
         print(f"✅ Published ({i}): {title} → {post_url}")
