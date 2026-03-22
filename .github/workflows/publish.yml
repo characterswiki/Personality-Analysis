@@ -1,9 +1,9 @@
-name: Publish Hashnode Posts
+lname: Publish Hashnode Posts
 
 on:
   push:
     branches:
-      - main      # Run action whenever you push to main branch
+      - main
     paths:
       - 'names.txt'
       - 'personality.txt'
@@ -22,13 +22,10 @@ jobs:
         python-version: '3.11'
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install requests
+      run: pip install requests
 
     - name: Publish to Hashnode
       env:
         HASHNODE_TOKEN: ${{ secrets.HASHNODE_TOKEN }}
-        PUBLICATION_ID: 69bfe39f4a1e513e41d1cf99
-      run: |
-        python scripts/publish_to_hashnode.py
+        PUBLICATION_ID: ${{ secrets.PUBLICATION_ID }}
+      run: python scripts/publish_to_hashnode.py
